@@ -35,10 +35,8 @@ public atenderPeticion(Socket s,File f) {
 		// TODO Auto-generated method stub
 	while(true) {
 	try {
-		//System.out.println("Antes de i");
-		int i = si.readInt();//System.out.println("Despues de i");
+		int i = si.readInt();
 			if(i==1) {//listar
-				//System.out.println("Cosa a listar");
 				this.so.writeObject(f);
 				so.reset();
 				so.flush();
@@ -47,17 +45,6 @@ public atenderPeticion(Socket s,File f) {
 				String archivo = si.readLine();
 				so.writeObject(new File(this.f,archivo));
 				so.reset();so.flush();
-//				try(BufferedInputStream b = new BufferedInputStream(new FileInputStream(new File(this.f,archivo)))) {
-//					byte buff[] = new byte[1024];
-//					int leido = b.read(buff);
-//					while(leido!=-1) {
-//						so.write(buff, 0, leido);
-//						leido = b.read(buff);so.flush();
-//					}
-//				}catch (IOException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}so.reset();
 			}else if(i==3) {//Subir
 				String archivo = si.readLine(); //Leo el nombre 
 				File f = (File) si.readObject(); //Leo file

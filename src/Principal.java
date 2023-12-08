@@ -20,23 +20,15 @@ public static void main(String[] args) {
 	try {
 		Socket s = new Socket("localhost",5555);
 		Scanner sc = new Scanner(System.in);
-		//System.out.println("Nombre usuario:");
-		//String nombre = sc.nextLine();
-		//Usuario u = new Usuario(nombre, s.getInetAddress().getHostAddress(),s.getLocalPort());
 		int i = -1;
 		try {
-			//Cambiarlo a buffereds?
 			ObjectOutputStream so = new ObjectOutputStream(s.getOutputStream());
 			ObjectInputStream si = new ObjectInputStream(s.getInputStream());
 			
-			//int i = -1;
 			do {
 				System.out.println("1.Listar archivos");
 				System.out.println("2.Descargar archivo");
 				System.out.println("3.Subir archivo");
-				//System.out.println("4.Eliminar");
-				
-				//System.out.println("-1.salir");
 				i = sc.nextInt();
 				
 				switch(i) {
@@ -44,23 +36,11 @@ public static void main(String[] args) {
 					listar(so, si);
 				}break;
 				case 2:{
-					//con un thread
-//					Thread t = new Thread(new Runnable() {
-//						
-//						@Override
-//						public void run() {
-//							// TODO Auto-generated method stub
-//							descargar(so,si);
-//						}
-//					});t.start();t.join();
 					descargar(so,si);
 				}break;
 				case 3:{
 					subir(so, si);
 				}
-				/*case -1:{
-					salir(so, si, s);
-				}*/
 				}
 			}while(i!=-1);
 		}catch(IOException e) {
@@ -74,13 +54,10 @@ public static void main(String[] args) {
 
 public static void listar(ObjectOutputStream so,ObjectInputStream si) {
 	try {
-		//System.out.println("Entro listar");
 		so.writeInt(1);
 		so.flush();
-		//System.out.println("Despues escribir");
-		File f = (File) si.readObject();//poner algo por si es vacio
-		//System.out.println("Despues leer");
-		for(File f2 : f.listFiles()) {//Meter esto en el server sino
+		File f = (File) si.readObject();
+		for(File f2 : f.listFiles()) {
 			if(f2.isDirectory()) System.out.println("Dir: "+f2.getName());
 			else if(f2.isFile()) System.out.println("File: "+f2.getName());
 		}
@@ -94,7 +71,7 @@ public static void listar(ObjectOutputStream so,ObjectInputStream si) {
 }
 
 public static void descargar(ObjectOutputStream so,ObjectInputStream si) {
-	System.out.println("Archivo a descargar?");//listar(so, si);
+	System.out.println("Archivo a descargar?");
 	Scanner sc = new Scanner(System.in);
 	String archivo = sc.nextLine();
 	try {
@@ -139,7 +116,6 @@ public static void subir(ObjectOutputStream so,ObjectInputStream si) {
 		so.writeObject(f);
 		so.reset();
 		so.flush();
-		//ahora viene el archivo
 }catch (IOException e) {
 	// TODO Auto-generated catch block
 	e.printStackTrace();
