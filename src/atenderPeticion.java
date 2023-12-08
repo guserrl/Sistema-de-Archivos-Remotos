@@ -33,36 +33,41 @@ public atenderPeticion(Socket s,File f) {
 @Override
 	public void run() {
 		// TODO Auto-generated method stub
-
+	while(true) {
 	try {
 		//System.out.println("Antes de i");
 		int i = si.readInt();//System.out.println("Despues de i");
 			if(i==1) {//listar
 				//System.out.println("Cosa a listar");
 				this.so.writeObject(f);
+				so.reset();
 				so.flush();
 			}else if(i==2) {//Descargar
 				//Primero lee el nombre
 				String archivo = si.readLine();
-				try(BufferedInputStream b = new BufferedInputStream(new FileInputStream(new File(this.f,archivo)))) {
-					byte buff[] = new byte[1024];
-					int leido = b.read(buff);
-					while(leido!=-1) {
-						so.write(buff, 0, leido);
-						leido = b.read(buff);
-					}
-				}catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}so.flush();
+				so.writeObject(new File(this.f,archivo));
+				so.reset();so.flush();
+//				try(BufferedInputStream b = new BufferedInputStream(new FileInputStream(new File(this.f,archivo)))) {
+//					byte buff[] = new byte[1024];
+//					int leido = b.read(buff);
+//					while(leido!=-1) {
+//						so.write(buff, 0, leido);
+//						leido = b.read(buff);so.flush();
+//					}
+//				}catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}so.reset();
 			}else if(i==3) {//Subir
 				String archivo = si.readLine(); //Leo el nombre 
-				try(DataOutputStream b = new DataOutputStream(new FileOutputStream(new File(this.f,archivo)))) {
+				File f = (File) si.readObject(); //Leo file
+				try(BufferedOutputStream b = new BufferedOutputStream(new FileOutputStream(new File(this.f,archivo)));
+						BufferedInputStream bi = new BufferedInputStream(new FileInputStream(f))) {
 					byte buff[] = new byte[1024];
-					int leido = si.read(buff);
+					int leido = bi.read(buff);
 					while(leido!=-1) {
 						b.write(buff, 0, leido);
-						leido = si.read(buff);
+						leido = bi.read(buff);
 					}
 				}catch (IOException e) {
 					// TODO Auto-generated catch block
@@ -72,6 +77,10 @@ public atenderPeticion(Socket s,File f) {
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
+	} catch (ClassNotFoundException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
+	}
 	}
 	}
 }

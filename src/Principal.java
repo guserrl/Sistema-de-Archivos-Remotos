@@ -8,6 +8,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.RandomAccessFile;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.List;
@@ -55,7 +56,7 @@ public static void main(String[] args) {
 					descargar(so,si);
 				}break;
 				case 3:{
-					
+					subir(so, si);
 				}
 				/*case -1:{
 					salir(so, si, s);
@@ -101,13 +102,17 @@ public static void descargar(ObjectOutputStream so,ObjectInputStream si) {
 		so.writeBytes(archivo+"\n");
 		so.flush();
 		//ahora viene el archivo
+		File f = (File) si.readObject();
 		byte buff[] = new byte[1024];
-		try(DataOutputStream b = new DataOutputStream(new FileOutputStream(new File(archivo)))	
-				){
-			int i = si.read(buff);
-			while(i!=-1) {
-				b.write(buff, 0, i);
-				i=si.read(buff);
+		try(BufferedOutputStream b = new BufferedOutputStream(new FileOutputStream(f));
+				BufferedInputStream bi = new BufferedInputStream(new FileInputStream(f)))	
+				{
+			int leidos = bi.read(buff);
+			while(leidos!=-1) {
+				b.write(buff, 0, leidos);
+				System.out.println("antes leer ");
+				leidos=bi.read(buff);
+				System.out.println("despues de leer");
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -117,6 +122,9 @@ public static void descargar(ObjectOutputStream so,ObjectInputStream si) {
 	 catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
+	} catch (ClassNotFoundException e1) {
+		// TODO Auto-generated catch block
+		e1.printStackTrace();
 	}
 }
 
@@ -128,22 +136,13 @@ public static void subir(ObjectOutputStream so,ObjectInputStream si) {
 		so.writeInt(3);
 		so.writeBytes(archivo+"\n");
 		File f = new File(archivo);
+		so.writeObject(f);
+		so.reset();
+		so.flush();
 		//ahora viene el archivo
-		byte buff[] = new byte[1024];
-		try(DataInputStream b = new DataInputStream(new FileInputStream(new File(archivo)))	
-				){
-			int i = b.read(buff);
-			while(i!=-1) {
-				so.write(buff, 0, i);
-				i=si.read(buff);
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	 catch (IOException e) {
-		// TODO Auto-generated catch block
-		e.printStackTrace();
-	}
+}catch (IOException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
 }
 }
